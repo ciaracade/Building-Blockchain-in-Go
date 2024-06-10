@@ -9,10 +9,11 @@ import (
 
 // Create blocks that store valuable information
 type Block struct {
-	Timestamp 		int64	// When block is created
-	Data			[]byte	// Valuable information in block
-	PrevBlockHash 	[]byte	// Previous block hash
-	Hash			[]byte 	// Block headers
+	Timestamp     int64
+	Data          []byte
+	PrevBlockHash []byte
+	Hash          []byte
+	Nonce         int
 }
 
 // Create func that handles calculating hashes for blocks
@@ -26,7 +27,12 @@ func (b *Block) SetHash() {
 
 // Create new block via previous block hash 
 func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{time.Now().Unix(), []byte(data), prevBlockHash, []byte{}}
-	block.SetHash()
+	block := &Block{time.Now().Unix(), []byte(data), prevBlockHash, []byte{}, 0}
+	pow := NewProofOfWork(block)
+	nonce, hash := pow.Run()
+
+	block.Hash = hash[:]
+	block.Nonce = nonce
+
 	return block
 }
